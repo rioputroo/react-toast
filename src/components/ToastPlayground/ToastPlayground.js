@@ -1,26 +1,28 @@
 import React from 'react';
 
 import Button from '../Button';
-import Toast from '../Toast';
+import ToastShelf from '../ToastShelf';
 
 import styles from './ToastPlayground.module.css';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
-// export const ToastContext = React.createContext();
-
 function ToastPlayground() {
   const [message, setMessage] = React.useState('');
-  const [variant, setVariant] = React.useState('notice');
-  const [isToastVisible, setIsToastVisible] = React.useState(false);
+  const [variant, setVariant] = React.useState(VARIANT_OPTIONS[0]);
+
+  const [toastData, setToastData] = React.useState([]);
 
   function handleSubmit(event) {
     event.preventDefault();
-    setIsToastVisible(true);
+    setToastData([...toastData, { message, variant, id: crypto.randomUUID() }]);
+
+    setMessage('');
+    setVariant(VARIANT_OPTIONS[0]);
   }
 
-  function handleDismiss() {
-    setIsToastVisible(false);
+  function handleDismiss(id) {
+    setToastData(toastData.filter((toast) => toast.id !== id));
   }
 
   return (
@@ -31,9 +33,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      {/* <ToastContext.Provider value={{ isToastVisible, setIsToastVisible }}> */}
-      {isToastVisible && <Toast variant={variant} handleDismiss={handleDismiss}>{message}</Toast>}
-      {/* </ToastContext.Provider> */}
+      <ToastShelf toastData={toastData} handleDismiss={handleDismiss} />
 
       <div className={styles.controlsWrapper}>
         <form onSubmit={(event) => handleSubmit(event)}>
